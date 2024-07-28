@@ -63,7 +63,7 @@ public class TemperatureActivity extends AppCompatActivity implements SensorEven
         }
 
         toLightSensorButton.setOnClickListener(v -> {
-            Intent lightSensorIntent = new Intent(TemperatureActivity.this, LightSensorActivity.class);
+            Intent lightSensorIntent = new Intent();
             lightSensorIntent.putExtra("temperature_data", temperatureData.getText().toString());
             setResult(RESULT_OK, lightSensorIntent);
             finish();

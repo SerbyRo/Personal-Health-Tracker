@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
@@ -20,10 +19,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class AccelerometerActivity extends AppCompatActivity implements SensorEventListener {
+
     private TextView accelerometerData;
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
     private Button toLightSensorButton;
+    private String currentAccelerometerData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,23 +46,29 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+        if (accelerometerSensor == null) {
+            accelerometerData.setText("Accelerometer not available!");
+        } else {
+            sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
 
         toLightSensorButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AccelerometerActivity.this, LightSensorActivity.class);
-            intent.putExtra("accelerometer_data", accelerometerData.getText().toString());
-            startActivity(intent);
+            Intent lightSensorIntent = new Intent(AccelerometerActivity.this, LightSensorActivity.class);
+            lightSensorIntent.putExtra("accelerometer_data", currentAccelerometerData);
+            startActivity(lightSensorIntent);
         });
+
         Animation rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate);
         accelerometerData.startAnimation(rotateAnimation);
     }
 
-
     @Override
-    public boolean onSupportNavigateUp() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        return true;
+    protected void onResume() {
+        super.onResume();
+        if (accelerometerSensor != null) {
+            sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 
     @Override
@@ -71,30 +78,25 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    public boolean onSupportNavigateUp() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        return true;
     }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            String data = "X: " + sensorEvent.values[0] + "\nY: " + sensorEvent.values[1] + "\nZ: " + sensorEvent.values[2];
-            accelerometerData.setText(data);
+            float x = sensorEvent.values[0];
+            float y = sensorEvent.values[1];
+            float z = sensorEvent.values[2];
+            currentAccelerometerData = String.format("Accelerometer:\nX: %.2f\nY: %.2f\nZ: %.2f", x, y, z);
+            accelerometerData.setText(currentAccelerometerData);
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
         // Handle changes in sensor accuracy if needed
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            String returnedData = data.getStringExtra("temperature_data");
-            accelerometerData.setText(returnedData);
-        }
     }
 }
