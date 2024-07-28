@@ -14,9 +14,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button accelerometerButton;
-    Button stepCounterButton;
-    Button temperatureButton;
+    private Button accelerometerButton;
+    private Button stepCounterButton;
+    private Button temperatureButton;
+
+    private Button nfcGeoButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
         temperatureButton = findViewById(R.id.temperatureButton);
         temperatureButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, TemperatureActivity.class);
+            startActivity(intent);
+        });
+
+        nfcGeoButton = findViewById(R.id.nfcGeoButton);
+        nfcGeoButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, NfcGeoActivity.class);
             startActivity(intent);
         });
 

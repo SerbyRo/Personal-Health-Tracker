@@ -6,8 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -19,12 +17,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class TemperatureActivity extends AppCompatActivity implements SensorEventListener {
-
-    private TextView temperatureTextView;
+    private TextView temperatureData;
     private SensorManager sensorManager;
     private Sensor temperatureSensor;
-
-    private String accelerometerData;
+    private Button toStepCounterButton;
+    private TextView receivedDataFromStepCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,34 +38,29 @@ public class TemperatureActivity extends AppCompatActivity implements SensorEven
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        temperatureTextView = findViewById(R.id.temperatureTextView);
-        Button transferData = findViewById(R.id.transferTemperatureButton);
+        temperatureData = findViewById(R.id.temperatureTextView);
+        toStepCounterButton = findViewById(R.id.transferTemperatureButton);
+        receivedDataFromStepCounter = findViewById(R.id.receivedData);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         temperatureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         sensorManager.registerListener(this, temperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
-
-
-        accelerometerData = getIntent().getStringExtra("step_counter_data");
-        if (accelerometerData != null) {
-            temperatureTextView.setText(accelerometerData);
+        // Retrieve data from StepCounterActivity
+        Intent intent = getIntent();
+        String stepCountData = intent.getStringExtra("step_count_data");
+        if (stepCountData != null) {
+            receivedDataFromStepCounter.setText(stepCountData);
+        } else {
+            receivedDataFromStepCounter.setText("No data received");
         }
 
-        transferData.setOnClickListener(v-> {
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("temperature_data","Temperature " +  temperatureTextView.getText().toString()+  " | Accelerometer Data: " + accelerometerData);
-            setResult(RESULT_OK, resultIntent);
+        toStepCounterButton.setOnClickListener(v -> {
+            Intent stepCounterIntent = new Intent();
+            stepCounterIntent.putExtra("temperature_data", temperatureData.getText().toString());
+            setResult(RESULT_OK, stepCounterIntent);
             finish();
         });
-        Animation bounceAnimation = AnimationUtils.loadAnimation(this, R.anim.bounce);
-        temperatureTextView.startAnimation(bounceAnimation);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        sensorManager.registerListener(this, temperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -85,11 +77,18 @@ public class TemperatureActivity extends AppCompatActivity implements SensorEven
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, temperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-            if(sensorEvent.sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE){
-                String data = "Temperature: " + sensorEvent.values[0] + "°C"; //Alt + 0176
-                temperatureTextView.setText(data);
-            }
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
+            float temperature = sensorEvent.values[0];
+            String data = String.format("Temperature: %f°C", temperature);
+            temperatureData.setText(data);
+        }
     }
 
     @Override
