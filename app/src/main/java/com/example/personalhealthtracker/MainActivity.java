@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 public class MainActivity extends AppCompatActivity {
 
     private Button accelerometerButton;
-    private Button stepCounterButton;
+    private Button lightSensorButton;
     private Button temperatureButton;
 
     private Button nfcGeoButton;
@@ -40,9 +40,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        stepCounterButton = findViewById(R.id.stepCounterButton);
-        stepCounterButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, StepCounterActivity.class);
+        lightSensorButton = findViewById(R.id.lightSensorButton);
+        lightSensorButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, LightSensorActivity.class);
             startActivity(intent);
         });
 

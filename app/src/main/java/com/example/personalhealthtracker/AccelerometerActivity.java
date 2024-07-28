@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
@@ -20,9 +21,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class AccelerometerActivity extends AppCompatActivity implements SensorEventListener {
     private TextView accelerometerData;
-    private Button toStepCounterButton;
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
+    private Button toLightSensorButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,21 +41,21 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         accelerometerData = findViewById(R.id.accelerometerTextView);
-        toStepCounterButton = findViewById(R.id.transferAccelerometerButton);
+        toLightSensorButton = findViewById(R.id.transferAccelerometerButton);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
-        toStepCounterButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AccelerometerActivity.this, StepCounterActivity.class);
+        toLightSensorButton.setOnClickListener(v -> {
+            Intent intent = new Intent(AccelerometerActivity.this, LightSensorActivity.class);
             intent.putExtra("accelerometer_data", accelerometerData.getText().toString());
             startActivity(intent);
         });
-
         Animation rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate);
         accelerometerData.startAnimation(rotateAnimation);
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -85,5 +86,15 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
+        // Handle changes in sensor accuracy if needed
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            String returnedData = data.getStringExtra("temperature_data");
+            accelerometerData.setText(returnedData);
+        }
     }
 }

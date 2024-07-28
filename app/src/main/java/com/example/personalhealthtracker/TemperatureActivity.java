@@ -6,6 +6,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -17,11 +19,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class TemperatureActivity extends AppCompatActivity implements SensorEventListener {
+
     private TextView temperatureData;
     private SensorManager sensorManager;
     private Sensor temperatureSensor;
-    private Button toStepCounterButton;
-    private TextView receivedDataFromStepCounter;
+    private Button toLightSensorButton;
+    private TextView receivedDataFromLightSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,28 +42,50 @@ public class TemperatureActivity extends AppCompatActivity implements SensorEven
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         temperatureData = findViewById(R.id.temperatureTextView);
-        toStepCounterButton = findViewById(R.id.transferTemperatureButton);
-        receivedDataFromStepCounter = findViewById(R.id.receivedData);
+        toLightSensorButton = findViewById(R.id.transferTemperatureButton);
+        receivedDataFromLightSensor = findViewById(R.id.receivedData);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         temperatureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-        sensorManager.registerListener(this, temperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
-        // Retrieve data from StepCounterActivity
-        Intent intent = getIntent();
-        String stepCountData = intent.getStringExtra("step_count_data");
-        if (stepCountData != null) {
-            receivedDataFromStepCounter.setText(stepCountData);
+        if (temperatureSensor == null) {
+            temperatureData.setText("Temperature Sensor not available!");
         } else {
-            receivedDataFromStepCounter.setText("No data received");
+            sensorManager.registerListener(this, temperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
 
-        toStepCounterButton.setOnClickListener(v -> {
-            Intent stepCounterIntent = new Intent();
-            stepCounterIntent.putExtra("temperature_data", temperatureData.getText().toString());
-            setResult(RESULT_OK, stepCounterIntent);
+        Intent intent = getIntent();
+        String lightSensorData = intent.getStringExtra("light_sensor_data");
+        if (lightSensorData != null) {
+            receivedDataFromLightSensor.setText(lightSensorData);
+        } else {
+            receivedDataFromLightSensor.setText("No data received");
+        }
+
+        toLightSensorButton.setOnClickListener(v -> {
+            Intent lightSensorIntent = new Intent(TemperatureActivity.this, LightSensorActivity.class);
+            lightSensorIntent.putExtra("temperature_data", temperatureData.getText().toString());
+            setResult(RESULT_OK, lightSensorIntent);
             finish();
         });
+
+        Animation bounceAnimation = AnimationUtils.loadAnimation(this, R.anim.bounce);
+        temperatureData.startAnimation(bounceAnimation);
+        receivedDataFromLightSensor.startAnimation(bounceAnimation);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (temperatureSensor != null) {
+            sensorManager.registerListener(this, temperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
     }
 
     @Override
@@ -71,28 +96,16 @@ public class TemperatureActivity extends AppCompatActivity implements SensorEven
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        sensorManager.unregisterListener(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        sensorManager.registerListener(this, temperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
             float temperature = sensorEvent.values[0];
-            String data = String.format("Temperature: %f°C", temperature);
+            String data = String.format("Temperature: %.2f°C", temperature);
             temperatureData.setText(data);
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-
+        // Handle changes in sensor accuracy if needed
     }
 }

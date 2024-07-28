@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Personal Health Tracker"/>
+        app:title="Serby's personal Tracker"/>
 
     <com.example.personalhealthtracker.CustomView
         android:id="@+id/customView"
@@ -41,13 +41,13 @@
         app:layout_constraintTop_toBottomOf="@+id/customView" />
 
     <Button
-        android:id="@+id/stepCounterButton"
+        android:id="@+id/lightSensorButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Step Counter"
+        android:text="Lightsensor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/accelerometerButton" />
@@ -62,7 +62,7 @@
         android:text="Temperature"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/stepCounterButton" />
+        app:layout_constraintTop_toBottomOf="@+id/lightSensorButton" />
 
     <Button
         android:id="@+id/nfcGeoButton"

@@ -5,10 +5,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TemperatureActivity">
+    tools:context=".LightSensorActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbarTemperature"
+        android:id="@+id/toolbarLightSensor"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
@@ -17,33 +17,33 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Temperature Sensor"/>
+        app:title="Light Sensor"/>
 
     <TextView
         android:id="@+id/receivedData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Received Data"
-        app:layout_constraintBottom_toTopOf="@+id/temperatureTextView"
+        app:layout_constraintBottom_toTopOf="@+id/lightSensorTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarTemperature" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbarLightSensor" />
 
     <TextView
-        android:id="@+id/temperatureTextView"
-        android:layout_width="0dp"
+        android:id="@+id/lightSensorTextView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Temperature Data"
-        app:layout_constraintBottom_toTopOf="@+id/transferTemperatureButton"
+        android:text="Light Sensor Data"
+        app:layout_constraintBottom_toTopOf="@+id/transferLightSensorButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/receivedData" />
 
     <Button
-        android:id="@+id/transferTemperatureButton"
+        android:id="@+id/transferLightSensorButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Transfer to Light Sensor"
+        android:text="Transfer to Temperature"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
