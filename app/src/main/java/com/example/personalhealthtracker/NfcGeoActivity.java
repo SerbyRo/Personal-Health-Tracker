@@ -38,6 +38,12 @@ public class NfcGeoActivity extends AppCompatActivity {
     private ImageView imageView;
 
     private EditText locationText;
+
+    private final ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            onResultReceived(result.getData());
+        }
+    });
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +58,29 @@ public class NfcGeoActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Button button = findViewById(R.id.button);
+        Button chooseCityButton = findViewById(R.id.chooseCityButton);
         locationText = findViewById(R.id.editTextText);
+        imageView = findViewById(R.id.imageView);
         button.setOnClickListener(v -> showLocation(locationText.getText().toString()));
+
+        chooseCityButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ChooserActivity.class);
+            launcher.launch(intent);
+        });
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+
+    private void onResultReceived(Intent intent) {
+        if (intent != null) {
+            int imageId = intent.getIntExtra(ChooserActivity.RETURN_VALUE, -1);
+            if (imageId != -1) {
+                imageView.setImageResource(imageId);
+            }
+        }
     }
 
 
