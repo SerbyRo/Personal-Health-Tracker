@@ -59,6 +59,7 @@ public class NfcGeoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Button button = findViewById(R.id.button);
         Button chooseCityButton = findViewById(R.id.chooseCityButton);
+        Button backButton = findViewById(R.id.backButton);
         locationText = findViewById(R.id.editTextText);
         imageView = findViewById(R.id.imageView);
         button.setOnClickListener(v -> showLocation(locationText.getText().toString()));
@@ -67,10 +68,9 @@ public class NfcGeoActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ChooserActivity.class);
             launcher.launch(intent);
         });
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         });
     }
 
