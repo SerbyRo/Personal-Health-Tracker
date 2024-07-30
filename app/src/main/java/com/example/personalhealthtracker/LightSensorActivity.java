@@ -60,7 +60,7 @@ public class LightSensorActivity extends AppCompatActivity implements SensorEven
         toTemperatureButton.setOnClickListener(v -> {
             Intent temperatureIntent = new Intent(LightSensorActivity.this, TemperatureActivity.class);
             temperatureIntent.putExtra("light_sensor_data", lightSensorData.getText().toString());
-            startActivityForResult(temperatureIntent, 1);
+            startActivity(temperatureIntent);
         });
 
         Animation bounceAnimation = AnimationUtils.loadAnimation(this, R.anim.bounce);

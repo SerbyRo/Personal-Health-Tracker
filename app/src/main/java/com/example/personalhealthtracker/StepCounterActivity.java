@@ -59,7 +59,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         toTemperatureButton.setOnClickListener(v -> {
             Intent temperatureIntent = new Intent(StepCounterActivity.this, TemperatureActivity.class);
             temperatureIntent.putExtra("step_count_data", stepCounterData.getText().toString());
-            startActivityForResult(temperatureIntent, 1);
+            startActivity(temperatureIntent);
         });
     }
 
