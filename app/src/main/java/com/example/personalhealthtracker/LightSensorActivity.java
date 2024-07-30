@@ -117,6 +117,6 @@ public class LightSensorActivity extends AppCompatActivity implements SensorEven
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-        // Handle changes in sensor accuracy
+        // Handle changes in sensor accuracy if needed
     }
 }
