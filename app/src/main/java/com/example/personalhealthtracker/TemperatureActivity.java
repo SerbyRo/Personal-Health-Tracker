@@ -1,11 +1,13 @@
 package com.example.personalhealthtracker;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -18,6 +20,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.List;
+
 public class TemperatureActivity extends AppCompatActivity implements SensorEventListener {
 
     private TextView temperatureData;
@@ -26,6 +30,7 @@ public class TemperatureActivity extends AppCompatActivity implements SensorEven
     private Button toLightSensorButton;
     private TextView receivedDataFromLightSensor;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +51,12 @@ public class TemperatureActivity extends AppCompatActivity implements SensorEven
         receivedDataFromLightSensor = findViewById(R.id.receivedData);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        temperatureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        temperatureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+
+        List<Sensor> sensorList = sensorManager.getSensorList(Sensor.TYPE_ALL);
+        for (Sensor sensor : sensorList) {
+            Log.d("SensorCheck", "Sensor: " + sensor.getName() + ", Type: " + sensor.getType());
+        }
 
         if (temperatureSensor == null) {
             temperatureData.setText("Temperature Sensor not available!");
@@ -54,6 +64,7 @@ public class TemperatureActivity extends AppCompatActivity implements SensorEven
             sensorManager.registerListener(this, temperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
 
+        // Retrieve data from LightSensorActivity
         Intent intent = getIntent();
         String lightSensorData = intent.getStringExtra("light_sensor_data");
         if (lightSensorData != null) {
@@ -63,9 +74,9 @@ public class TemperatureActivity extends AppCompatActivity implements SensorEven
         }
 
         toLightSensorButton.setOnClickListener(v -> {
-            Intent lightSensorIntent = new Intent();
-            lightSensorIntent.putExtra("temperature_data", temperatureData.getText().toString());
-            setResult(RESULT_OK, lightSensorIntent);
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("temperature_data", temperatureData.getText().toString());
+            setResult(RESULT_OK, resultIntent);
             finish();
         });
 
@@ -97,9 +108,9 @@ public class TemperatureActivity extends AppCompatActivity implements SensorEven
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if (sensorEvent.sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             float temperature = sensorEvent.values[0];
-            String data = String.format("Temperature: %.2f°C", temperature);
+            String data = String.format("Gyroscope values: %.2f", temperature);
             temperatureData.setText(data);
         }
     }

@@ -22,11 +22,13 @@ import androidx.core.view.WindowInsetsCompat;
 public class LightSensorActivity extends AppCompatActivity implements SensorEventListener {
 
     private TextView lightSensorData;
+    private TextView receivedDataFromTemperature;
     private TextView receivedDataFromAccelerometer;
     private SensorManager sensorManager;
     private Sensor lightSensor;
     private Button toTemperatureButton;
-    private TextView receivedDataFromTemperature;
+
+    private static final int REQUEST_CODE_TEMPERATURE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,32 +59,25 @@ public class LightSensorActivity extends AppCompatActivity implements SensorEven
             sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
 
-        toTemperatureButton.setOnClickListener(v -> {
-            Intent temperatureIntent = new Intent(LightSensorActivity.this, TemperatureActivity.class);
-            temperatureIntent.putExtra("light_sensor_data", lightSensorData.getText().toString());
-            startActivity(temperatureIntent);
-        });
-
-        Animation bounceAnimation = AnimationUtils.loadAnimation(this, R.anim.bounce);
-        lightSensorData.startAnimation(bounceAnimation);
-        receivedDataFromTemperature.startAnimation(bounceAnimation);
-
+        // Retrieve data from StepCounterActivity
         Intent intent = getIntent();
         String accelerometerData = intent.getStringExtra("accelerometer_data");
         if (accelerometerData != null) {
             receivedDataFromAccelerometer.setText(accelerometerData);
         } else {
-            receivedDataFromAccelerometer.setText("No data received");
+            receivedDataFromAccelerometer.setText("No accelerometer data received");
         }
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
-            String returnedData = data.getStringExtra("temperature_data");
-            receivedDataFromTemperature.setText(returnedData);
-        }
+        toTemperatureButton.setOnClickListener(v -> {
+            Intent temperatureIntent = new Intent(LightSensorActivity.this, TemperatureActivity.class);
+            temperatureIntent.putExtra("light_sensor_data", lightSensorData.getText().toString());
+            startActivityForResult(temperatureIntent, REQUEST_CODE_TEMPERATURE);
+        });
+
+        Animation bounceAnimation = AnimationUtils.loadAnimation(this, R.anim.bounce);
+        lightSensorData.startAnimation(bounceAnimation);
+        receivedDataFromTemperature.startAnimation(bounceAnimation);
+        receivedDataFromAccelerometer.startAnimation(bounceAnimation);
     }
 
     @Override
@@ -118,5 +113,16 @@ public class LightSensorActivity extends AppCompatActivity implements SensorEven
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
         // Handle changes in sensor accuracy if needed
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_TEMPERATURE && resultCode == RESULT_OK && data != null) {
+            String temperatureData = data.getStringExtra("temperature_data");
+            if (temperatureData != null) {
+                receivedDataFromTemperature.setText(temperatureData);
+            }
+        }
     }
 }
